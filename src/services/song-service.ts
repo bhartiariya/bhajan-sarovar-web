@@ -128,23 +128,41 @@ export class SongService {
       const snapshot = await getDocs(q)
       const bhajans = snapshot.docs.map(doc => {
         const data = doc.data()
+        
+        // Helper function to safely read strings
+        const readString = (value: any): string => {
+          if (value == null) return ''
+          if (typeof value === 'string') return value
+          return value.toString()
+        }
+        
+        // Helper function to parse timestamps
+        const parseTimestamp = (timestamp: any): Date | null => {
+          if (timestamp == null) return null
+          if (timestamp instanceof Date) return timestamp
+          if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+            return timestamp.toDate()
+          }
+          return null
+        }
+        
         return {
           id: doc.id,
-          filename: data.filename || '',
-          title: data.title || '',
-          artist: data.artist || '',
-          category: data.category,
-          s3Url: data.s3Url || '',
-          thumbnail: data.thumbnail,
-          fileSize: data.fileSize || 0,
-          searchKeywords: data.searchKeywords || [],
+          filename: readString(data.filename),
+          title: readString(data.title),
+          artist: readString(data.artist),
+          category: data.category?.toString(),
+          s3Url: readString(data.s3Url),
+          thumbnail: data.thumbnail?.toString(),
+          fileSize: data.fileSize ?? 0,
+          searchKeywords: Array.isArray(data.searchKeywords) ? data.searchKeywords : [],
           isActive: data.isActive ?? true,
-          playCount: data.playCount || 0,
-          uploadDate: data.uploadDate?.toDate(),
-          uploadedBy: data.uploadedBy,
-          uploadedByRole: data.uploadedByRole,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
+          playCount: data.playCount ?? 0,
+          uploadDate: parseTimestamp(data.uploadDate),
+          uploadedBy: data.uploadedBy?.toString(),
+          uploadedByRole: data.uploadedByRole?.toString(),
+          createdAt: parseTimestamp(data.createdAt) || new Date(),
+          updatedAt: parseTimestamp(data.updatedAt) || new Date(),
         } as Bhajan
       })
       
@@ -176,7 +194,7 @@ export class SongService {
       hasLyrics: '0',
       url: bhajan.s3Url,
       copyright: 'Bhajan Sangrah',
-      image: bhajan.thumbnail || '/assets/img/cover.jpg',
+      image: bhajan.thumbnail || '/api/placeholder/200/200',
       downloadUrl: bhajan.s3Url,
     }
   }

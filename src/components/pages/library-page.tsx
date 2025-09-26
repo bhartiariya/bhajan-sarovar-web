@@ -50,11 +50,24 @@ export function LibraryPage() {
   const handlePlaySong = (song: any) => {
     loadTrack({
       id: song.id,
-      title: song.title,
-      artist: song.artist,
+      name: song.title,
+      type: 'bhajan',
+      album: 'Library',
+      year: '2025',
+      duration: song.duration.toString(),
+      label: 'Bhajan Sangrah',
+      artists: song.artist,
+      artistsId: '',
+      featuredArtists: '',
+      featuredArtistsId: '',
+      explicitContent: 0,
+      playCount: '0',
+      language: 'Hindi',
+      hasLyrics: '0',
       url: `https://www.soundjay.com/misc/sounds/bell-ringing-05.wav`,
+      copyright: 'Bhajan Sangrah',
       image: song.image,
-      duration: song.duration,
+      downloadUrl: `https://www.soundjay.com/misc/sounds/bell-ringing-05.wav`,
     })
   }
 

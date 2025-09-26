@@ -44,14 +44,7 @@ export function SearchPage() {
   })
 
   const handlePlaySong = (song: Song) => {
-    loadTrack({
-      id: song.id,
-      title: song.name,
-      artist: song.artists,
-      url: song.url,
-      image: song.image,
-      duration: parseInt(song.duration) || 180,
-    })
+    loadTrack(song)
   }
 
   const clearSearch = () => {

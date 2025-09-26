@@ -107,14 +107,17 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   },
 
   loadTrack: async (song: Song) => {
+    console.log('🎵 Player store loading track:', song.name)
     set({ isLoading: true, currentSong: song, isMiniPlayerVisible: true })
     try {
       await audioService.loadTrack(song)
-      set({ duration: audioService.getDuration() })
+      const duration = audioService.getDuration()
+      console.log('✅ Track loaded, duration:', duration)
+      set({ duration, isLoading: false })
     } catch (error) {
-      console.error('Failed to load track:', error)
-    } finally {
+      console.error('❌ Failed to load track:', error)
       set({ isLoading: false })
+      // You could add error state here if needed
     }
   },
 
@@ -192,21 +195,29 @@ audioService.addListener((event, data) => {
   const state = usePlayerStore.getState()
   
   switch (event) {
+    case 'loaded':
+      console.log('✅ Track loaded in player store')
+      state.setLoading(false)
+      break
     case 'play':
+      console.log('▶️ Track playing in player store')
       state.setLoading(false)
       state.setPlaying(true)
       state.setPaused(false)
       break
     case 'pause':
+      console.log('⏸️ Track paused in player store')
       state.setPlaying(false)
       state.setPaused(true)
       break
     case 'stop':
+      console.log('⏹️ Track stopped in player store')
       state.setPlaying(false)
       state.setPaused(false)
       state.setCurrentTime(0)
       break
     case 'end':
+      console.log('🔚 Track ended in player store')
       // Handle repeat modes
       if (state.repeatMode === 'one') {
         audioService.seek(0)
@@ -224,5 +235,20 @@ audioService.addListener((event, data) => {
     case 'volume':
       state.setVolume(audioService.getVolume())
       break
+    case 'loaderror':
+      console.error('❌ Track load error in player store:', data)
+      state.setLoading(false)
+      break
   }
 })
+
+// Update current time periodically when playing
+setInterval(() => {
+  const state = usePlayerStore.getState()
+  if (state.isPlaying && audioService.isPlaying()) {
+    const currentTime = audioService.getCurrentTime()
+    if (currentTime !== state.currentTime) {
+      state.setCurrentTime(currentTime)
+    }
+  }
+}, 1000)

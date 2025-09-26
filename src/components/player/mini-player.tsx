@@ -42,7 +42,7 @@ export function MiniPlayer() {
           {currentSong.image ? (
             <img
               src={currentSong.image}
-              alt={currentSong.title}
+              alt={currentSong.name}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -55,10 +55,10 @@ export function MiniPlayer() {
         {/* Song Info */}
         <div className="flex-1 min-w-0">
           <h4 className="font-medium text-text-primary truncate">
-            {currentSong.title}
+            {currentSong.name}
           </h4>
           <p className="text-sm text-text-secondary truncate">
-            {currentSong.artist}
+            {currentSong.artists}
           </p>
         </div>
 
