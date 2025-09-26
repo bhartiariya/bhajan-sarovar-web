@@ -45,16 +45,16 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
       {/* Mobile Backdrop */}
       {isMobile && (
         <div 
-          className="fixed inset-0 bg-black/50 z-50"
+          className="fixed inset-0 bg-black/50 z-20"
           onClick={onClose}
         />
       )}
       
       {/* Sidebar */}
-      <div className={`${isMobile ? 'fixed left-0 top-0 bottom-0 w-80 z-50' : 'w-full h-full'} bg-white/95 backdrop-blur-xl shadow-lg`}>
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6">
+      <div className={`${isMobile ? 'fixed left-0 top-0 bottom-0 w-80 z-20' : 'w-full h-full'} bg-white/95 backdrop-blur-xl shadow-lg`}>
+        <div className="flex flex-col h-full overflow-hidden">
+          {/* Logo - Fixed Header */}
+          <div className="p-6 flex-shrink-0">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">🕉️</span>
@@ -74,8 +74,10 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
             )}
           </div>
 
-          {/* Main Navigation */}
-          <div className="px-3 mb-6">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto sidebar-scroll">
+            {/* Main Navigation */}
+            <div className="px-3 mb-6">
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = currentTab === item.id
@@ -188,10 +190,11 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
               )}
             </div>
           )}
+          </div>
 
-          {/* Sign Out */}
+          {/* Sign Out - Fixed Footer */}
           {user && (
-            <div className="px-3 mt-auto mb-6">
+            <div className="px-3 py-4 flex-shrink-0 border-t border-gray-200">
               <button
                 onClick={handleSignOut}
                 className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"

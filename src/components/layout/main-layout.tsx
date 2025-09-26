@@ -8,6 +8,7 @@ import { SideDrawer } from '@/components/layout/side-drawer'
 import { Header } from '@/components/layout/header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { MiniPlayer } from '@/components/player/mini-player'
+import { FullPlayer } from '@/components/player/full-player'
 import { HomePage } from '@/components/pages/home-page'
 import { SearchPage } from '@/components/pages/search-page'
 import { LibraryPage } from '@/components/pages/library-page'
@@ -22,7 +23,7 @@ import { Toaster } from 'react-hot-toast'
 export function MainLayout() {
   const { user } = useAuthStore()
   const { currentTab } = useTabStore()
-  const { currentSong } = usePlayerStore()
+  const { currentSong, isFullPlayerVisible } = usePlayerStore()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const renderCurrentPage = () => {
@@ -78,7 +79,7 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-white/95 backdrop-blur-xl border-r border-gray-200 z-30 shadow-lg">
+      <div className="hidden md:flex fixed left-0 top-0 w-64 bg-white/95 backdrop-blur-xl border-r border-gray-200 z-20 shadow-lg" style={{ height: 'calc(100vh - 80px)' }}>
         <SideDrawer isOpen={true} onClose={() => {}} />
       </div>
 
@@ -100,14 +101,17 @@ export function MainLayout() {
       </div>
 
       {/* Main Content */}
-      <main className={`${currentSong ? 'pb-32' : 'pb-20'} ${user ? 'md:ml-64' : 'md:ml-0'} transition-all duration-300`}>
+      <main className={`${user ? 'md:ml-64' : 'md:ml-0'} transition-all duration-300`} style={{ paddingBottom: '80px' }}>
         <div className="min-h-screen">
           {renderCurrentPage()}
         </div>
       </main>
 
-      {/* Mini Player */}
-      {currentSong && <MiniPlayer />}
+      {/* Mini Player - Always visible */}
+      <MiniPlayer />
+
+      {/* Full Player */}
+      {isFullPlayerVisible && <FullPlayer />}
 
       {/* Bottom Navigation - Mobile Only */}
       <div className="md:hidden">

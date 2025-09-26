@@ -2,6 +2,148 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Music Player Styles */
+@layer components {
+  .music-player-gradient {
+    background: linear-gradient(135deg, #f97316 0%, #dc2626 50%, #b91c1c 100%);
+  }
+  
+  .music-player-shadow {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .music-player-glow {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  }
+  
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .slider::-webkit-slider-track {
+    background: #e5e7eb;
+    height: 4px;
+    border-radius: 2px;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #f97316;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .slider::-moz-range-track {
+    background: #e5e7eb;
+    height: 4px;
+    border-radius: 2px;
+    border: none;
+  }
+  
+  .slider::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #f97316;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .play-button-animation {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .play-button-animation:hover {
+    transform: scale(1.05);
+  }
+  
+  .play-button-animation:active {
+    transform: scale(0.95);
+  }
+  
+  .album-art-hover {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .album-art-hover:hover {
+    transform: scale(1.05) rotate(2deg);
+  }
+  
+  .progress-bar-hover {
+    transition: all 0.2s ease;
+  }
+  
+  .progress-bar-hover:hover {
+    height: 6px;
+  }
+  
+  .player-backdrop {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #f97316, #dc2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .button-hover-scale {
+    transition: transform 0.2s ease;
+  }
+  
+  .button-hover-scale:hover {
+    transform: scale(1.05);
+  }
+  
+  .button-hover-scale:active {
+    transform: scale(0.95);
+  }
+  
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+  
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 3px;
+  }
+  
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #9ca3af;
+  }
+}
+
 @layer base {
   * {
     @apply border-border-light;
