@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border-light;
+  }
+  body {
+    @apply bg-background-primary text-text-primary;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Audio player specific styles */
+.audio-player {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200;
+}
+
+.progress-bar {
+  @apply w-full h-1 bg-gray-200 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-primary-500 transition-all duration-200 ease-out;
+}
+
+/* Content card animations */
+.content-card {
+  @apply transition-all duration-300 ease-out hover:scale-105 hover:shadow-md;
+}
+
+/* Loading animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Waveform styles */
+.waveform-container {
+  @apply w-full h-16 bg-gray-100 rounded-lg overflow-hidden;
+}
+
+/* Responsive grid */
+.content-grid {
+  @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4;
+}
+
+@media (max-width: 640px) {
+  .content-grid {
+    @apply grid-cols-2 gap-3;
+  }
+}

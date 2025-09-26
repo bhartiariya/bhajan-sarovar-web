@@ -1,0 +1,76 @@
+'use client'
+
+import { Play } from 'lucide-react'
+import { usePlayerStore } from '@/store/player-store'
+
+interface ContentCardProps {
+  item: {
+    id: string
+    title: string
+    artist?: string
+    image: string
+    type: string
+  } | undefined
+  onPlay?: () => void
+  onClick?: () => void
+}
+
+export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
+  const { currentSong } = usePlayerStore()
+  
+  // Safety check for undefined item
+  if (!item) {
+    return (
+      <div className="animate-pulse">
+        <div className="w-full h-32 bg-surface-variant rounded-lg mb-2" />
+        <div className="h-4 bg-surface-variant rounded mb-1" />
+        <div className="h-3 bg-surface-variant rounded w-3/4" />
+      </div>
+    )
+  }
+  
+  const isPlaying = currentSong?.id === item.id
+  const handleClick = onClick || onPlay
+
+  return (
+    <div className="group cursor-pointer" onClick={handleClick}>
+      <div className="relative">
+        <div className="w-full h-32 bg-surface-variant rounded-lg overflow-hidden mb-2">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-primary flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">🎵</span>
+            </div>
+          )}
+        </div>
+        
+        {/* Play Button Overlay - only show for songs */}
+        {item.type === 'song' && onPlay && (
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onPlay()
+              }}
+              className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors"
+            >
+              <Play className="w-5 h-5 ml-0.5" />
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div>
+        <h4 className="font-medium text-text-primary truncate">{item.title}</h4>
+        {item.artist && (
+          <p className="text-sm text-text-secondary truncate">{item.artist}</p>
+        )}
+      </div>
+    </div>
+  )
+}
