@@ -76,30 +76,43 @@ export function MainLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-background-primary">
-      {/* Header */}
-      <Header
-        title={getHeaderTitle(currentTab)}
-        showMenuButton={true}
-        onMenuClick={() => setIsDrawerOpen(true)}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-white/95 backdrop-blur-xl border-r border-gray-200 z-30 shadow-lg">
+        <SideDrawer isOpen={true} onClose={() => {}} />
+      </div>
 
-      {/* Side Drawer */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      />
+      {/* Mobile Header */}
+      <div className="md:hidden">
+        <Header
+          title={getHeaderTitle(currentTab)}
+          showMenuButton={true}
+          onMenuClick={() => setIsDrawerOpen(true)}
+        />
+      </div>
+
+      {/* Mobile Side Drawer */}
+      <div className="md:hidden">
+        <SideDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+        />
+      </div>
 
       {/* Main Content */}
-      <main className="pb-20">
-        {renderCurrentPage()}
+      <main className={`${currentSong ? 'pb-32' : 'pb-20'} ${user ? 'md:ml-64' : 'md:ml-0'} transition-all duration-300`}>
+        <div className="min-h-screen">
+          {renderCurrentPage()}
+        </div>
       </main>
 
       {/* Mini Player */}
       {currentSong && <MiniPlayer />}
 
-      {/* Bottom Navigation */}
-      <BottomNavigation />
+      {/* Bottom Navigation - Mobile Only */}
+      <div className="md:hidden">
+        <BottomNavigation />
+      </div>
 
       {/* Toast Notifications */}
       <Toaster
@@ -107,8 +120,10 @@ export function MainLayout() {
         toastOptions={{
           duration: 4000,
           style: {
-            background: '#363636',
-            color: '#fff',
+            background: '#ffffff',
+            color: '#1f2937',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
           },
         }}
       />

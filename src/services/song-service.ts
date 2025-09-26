@@ -238,6 +238,126 @@ export class SongService {
       return []
     }
   }
+
+  async fetchSongsByCategories(categoryIds: string[], limitCount: number = 20): Promise<Song[]> {
+    try {
+      console.log(`🎵 Fetching songs for categories: ${categoryIds.join(', ')}`)
+      
+      // Get category names first
+      const categoryNames: string[] = []
+      for (const categoryId of categoryIds) {
+        try {
+          const categoryDoc = await getDoc(doc(db, this.categoriesCollection, categoryId))
+          if (categoryDoc.exists()) {
+            const categoryData = categoryDoc.data()
+            const categoryName = categoryData?.name || categoryData?.displayName || ''
+            if (categoryName) {
+              categoryNames.push(categoryName)
+            }
+          }
+        } catch (e) {
+          console.error(`Error fetching category ${categoryId}:`, e)
+        }
+      }
+      
+      if (categoryNames.length === 0) {
+        console.log('❌ No valid categories found')
+        return []
+      }
+      
+      // Fetch songs for each category
+      let allSongs: Song[] = []
+      const songIds = new Set<string>()
+      
+      for (const categoryName of categoryNames) {
+        const q = query(
+          collection(db, this.bhajansCollection),
+          where('category', '==', categoryName),
+          where('isActive', '==', true),
+          limit(limitCount)
+        )
+        
+        const snapshot = await getDocs(q)
+        const bhajans = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Bhajan))
+        
+        bhajans.forEach(bhajan => {
+          if (!songIds.has(bhajan.id)) {
+            allSongs.push(this.bhajanToSong(bhajan))
+            songIds.add(bhajan.id)
+          }
+        })
+      }
+      
+      console.log(`🎵 Found ${allSongs.length} songs for categories`)
+      return allSongs.slice(0, limitCount)
+    } catch (error) {
+      console.error('❌ Error fetching songs by categories:', error)
+      return []
+    }
+  }
+
+  async fetchSongsByArtists(artistIds: string[], limitCount: number = 20): Promise<Song[]> {
+    try {
+      console.log(`🎵 Fetching songs for artists: ${artistIds.join(', ')}`)
+      
+      // Get artist names first
+      const artistNames: string[] = []
+      for (const artistId of artistIds) {
+        try {
+          const artistDoc = await getDoc(doc(db, this.artistsCollection, artistId))
+          if (artistDoc.exists()) {
+            const artistData = artistDoc.data()
+            const artistName = artistData?.name || ''
+            if (artistName) {
+              artistNames.push(artistName)
+            }
+          }
+        } catch (e) {
+          console.error(`Error fetching artist ${artistId}:`, e)
+        }
+      }
+      
+      if (artistNames.length === 0) {
+        console.log('❌ No valid artists found')
+        return []
+      }
+      
+      // Fetch songs for each artist
+      let allSongs: Song[] = []
+      const songIds = new Set<string>()
+      
+      for (const artistName of artistNames) {
+        const q = query(
+          collection(db, this.bhajansCollection),
+          where('artist', '==', artistName),
+          where('isActive', '==', true),
+          limit(limitCount)
+        )
+        
+        const snapshot = await getDocs(q)
+        const bhajans = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Bhajan))
+        
+        bhajans.forEach(bhajan => {
+          if (!songIds.has(bhajan.id)) {
+            allSongs.push(this.bhajanToSong(bhajan))
+            songIds.add(bhajan.id)
+          }
+        })
+      }
+      
+      console.log(`🎵 Found ${allSongs.length} songs for artists`)
+      return allSongs.slice(0, limitCount)
+    } catch (error) {
+      console.error('❌ Error fetching songs by artists:', error)
+      return []
+    }
+  }
 }
 
 export const songService = new SongService()

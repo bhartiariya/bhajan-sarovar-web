@@ -35,10 +35,10 @@ export function MiniPlayer() {
   }
 
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-40 bg-white border-t border-border-light shadow-lg">
-      <div className="flex items-center p-3 space-x-3">
+    <div className="fixed bottom-20 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-2xl">
+      <div className="flex items-center p-4 space-x-4">
         {/* Song Image */}
-        <div className="w-12 h-12 bg-surface-variant rounded-lg overflow-hidden flex-shrink-0">
+        <div className="w-14 h-14 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
           {currentSong.image ? (
             <img
               src={currentSong.image}
@@ -46,53 +46,53 @@ export function MiniPlayer() {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-primary flex items-center justify-center">
-              <span className="text-white font-bold">🎵</span>
+            <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">🎵</span>
             </div>
           )}
         </div>
 
         {/* Song Info */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-text-primary truncate">
+          <h4 className="font-semibold text-gray-900 truncate text-sm">
             {currentSong.name}
           </h4>
-          <p className="text-sm text-text-secondary truncate">
+          <p className="text-xs text-gray-600 truncate">
             {currentSong.artists}
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <button
             onClick={skipToPrevious}
-            className="p-2 rounded-full hover:bg-surface-variant transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <SkipBack className="w-4 h-4 text-text-primary" />
+            <SkipBack className="w-5 h-5 text-gray-700" />
           </button>
 
           <button
             onClick={handlePlayPause}
-            className="p-2 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors"
+            className="p-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors shadow-lg"
           >
             {isPlaying ? (
-              <Pause className="w-4 h-4" />
+              <Pause className="w-5 h-5" />
             ) : (
-              <Play className="w-4 h-4 ml-0.5" />
+              <Play className="w-5 h-5 ml-0.5" />
             )}
           </button>
 
           <button
             onClick={skipToNext}
-            className="p-2 rounded-full hover:bg-surface-variant transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <SkipForward className="w-4 h-4 text-text-primary" />
+            <SkipForward className="w-5 h-5 text-gray-700" />
           </button>
         </div>
 
         {/* Volume */}
-        <div className="flex items-center space-x-2">
-          <Volume2 className="w-4 h-4 text-text-secondary" />
+        <div className="flex items-center space-x-3">
+          <Volume2 className="w-4 h-4 text-gray-600" />
           <input
             type="range"
             min="0"
@@ -100,28 +100,28 @@ export function MiniPlayer() {
             step="0.1"
             value={volume}
             onChange={handleVolumeChange}
-            className="w-16 h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer"
+            className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           />
         </div>
 
         {/* Expand Button */}
         <button
           onClick={showFullPlayer}
-          className="p-2 rounded-full hover:bg-surface-variant transition-colors"
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
         >
-          <svg className="w-4 h-4 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
       </div>
 
       {/* Progress Bar */}
-      <div className="px-3 pb-2">
-        <div className="flex items-center space-x-2 text-xs text-text-secondary">
+      <div className="px-4 pb-3">
+        <div className="flex items-center space-x-3 text-xs text-gray-600">
           <span>{formatDuration(currentTime)}</span>
-          <div className="flex-1 h-1 bg-surface-variant rounded-full overflow-hidden">
+          <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary transition-all duration-200"
+              className="h-full bg-gray-900 transition-all duration-200"
               style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
             />
           </div>

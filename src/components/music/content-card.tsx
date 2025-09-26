@@ -22,9 +22,9 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
   if (!item) {
     return (
       <div className="animate-pulse">
-        <div className="w-full h-32 bg-surface-variant rounded-lg mb-2" />
-        <div className="h-4 bg-surface-variant rounded mb-1" />
-        <div className="h-3 bg-surface-variant rounded w-3/4" />
+        <div className="w-full h-32 bg-gray-200 rounded-lg mb-2" />
+        <div className="h-4 bg-gray-200 rounded mb-1" />
+        <div className="h-3 bg-gray-200 rounded w-3/4" />
       </div>
     )
   }
@@ -35,7 +35,7 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
   return (
     <div className="group cursor-pointer" onClick={handleClick}>
       <div className="relative">
-        <div className="w-full h-32 bg-surface-variant rounded-lg overflow-hidden mb-2">
+        <div className="w-48 h-48 bg-gray-200 rounded-lg overflow-hidden mb-2">
           {item.image ? (
             <img
               src={item.image}
@@ -43,7 +43,7 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            <div className="w-full h-full bg-primary flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
               <span className="text-white font-bold text-2xl">🎵</span>
             </div>
           )}
@@ -57,7 +57,7 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
                 e.stopPropagation()
                 onPlay()
               }}
-              className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors"
+              className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
             >
               <Play className="w-5 h-5 ml-0.5" />
             </button>
@@ -66,9 +66,9 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
       </div>
       
       <div>
-        <h4 className="font-medium text-text-primary truncate">{item.title}</h4>
+        <h4 className="font-medium text-gray-900 truncate">{item.title}</h4>
         {item.artist && (
-          <p className="text-sm text-text-secondary truncate">{item.artist}</p>
+          <p className="text-sm text-gray-600 truncate">{item.artist}</p>
         )}
       </div>
     </div>

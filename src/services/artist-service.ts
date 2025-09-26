@@ -189,6 +189,53 @@ export class ArtistService {
       return []
     }
   }
+
+  mapFirestoreToArtist(data: any, id: string): Artist {
+    // Helper function to safely convert to List<String>
+    const safeStringList = (value: any): string[] => {
+      if (value == null) return []
+      if (Array.isArray(value)) {
+        return value.map((e) => e.toString())
+      }
+      if (typeof value === 'number') {
+        console.warn('⚠️ Artist.fromFirestore: Found number value where List<String> expected, returning empty list')
+        return []
+      }
+      if (typeof value === 'string') {
+        return [value]
+      }
+      console.warn('⚠️ Artist.fromFirestore: Unexpected type for list field, returning empty list')
+      return []
+    }
+    
+    // Helper function to parse timestamps
+    const parseTimestamp = (timestamp: any): Date | null => {
+      if (timestamp == null) return null
+      if (timestamp instanceof Date) return timestamp
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        return timestamp.toDate()
+      }
+      return null
+    }
+    
+    return {
+      id: id,
+      name: data.name ?? '',
+      songCount: data.songCount ?? 0,
+      songs: safeStringList(data.songs),
+      categories: safeStringList(data.categories),
+      totalDuration: data.totalDuration ?? 0,
+      genres: safeStringList(data.genres),
+      monthlyListeners: data.monthlyListeners ?? 0,
+      isVerified: data.isVerified ?? false,
+      socialLinks: data.socialLinks ? { ...data.socialLinks } : {},
+      bio: data.bio ?? '',
+      image: data.image,
+      userId: data.userId?.toString(),
+      createdAt: parseTimestamp(data.createdAt) || new Date(),
+      updatedAt: parseTimestamp(data.updatedAt) || new Date(),
+    } as Artist
+  }
 }
 
 export const artistService = new ArtistService()

@@ -14,6 +14,24 @@ export interface UserPreferences {
   notifications: boolean
   audioQuality: 'low' | 'medium' | 'high'
   autoPlay: boolean
+  selectedArtists?: string[]
+  selectedCategories?: string[]
+}
+
+export interface UserProfile {
+  uid: string
+  email: string
+  displayName: string
+  photoURL: string
+  role: string
+  favoriteArtists: string[]
+  favoriteCategories: string[]
+  preferences: {
+    selectedArtists: string[]
+    selectedCategories: string[]
+  }
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export interface Song {

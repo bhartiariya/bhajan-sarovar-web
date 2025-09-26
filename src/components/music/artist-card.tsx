@@ -22,7 +22,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
   return (
     <div className="group cursor-pointer" onClick={handleArtistClick}>
       <div className="relative">
-        <div className="w-full h-32 bg-surface-variant rounded-lg overflow-hidden mb-2">
+        <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-2 mx-auto">
           {artist.image ? (
             <img
               src={artist.image}
@@ -30,16 +30,16 @@ export function ArtistCard({ artist }: ArtistCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            <div className="w-full h-full bg-primary flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
               <span className="text-white font-bold text-2xl">🎤</span>
             </div>
           )}
         </div>
       </div>
       
-      <div>
-        <h4 className="font-medium text-text-primary truncate">{artist.name}</h4>
-        <p className="text-sm text-text-secondary">{artist.songCount} songs</p>
+      <div className="text-center">
+        <h4 className="font-medium text-gray-900 truncate">{artist.name}</h4>
+        <p className="text-sm text-gray-600">{artist.songCount} songs</p>
       </div>
     </div>
   )
