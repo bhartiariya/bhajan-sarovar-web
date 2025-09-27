@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, Search, Bell } from 'lucide-react'
+import { Menu, Search, Bell, ArrowLeft } from 'lucide-react'
 import { useTabStore } from '@/store/tab-store'
 import { useAuthStore } from '@/store/auth-store'
 
@@ -9,6 +9,8 @@ interface HeaderProps {
   title: string
   showMenuButton?: boolean
   onMenuClick?: () => void
+  showBackButton?: boolean
+  onBackClick?: () => void
   actions?: React.ReactNode[]
 }
 
@@ -16,6 +18,8 @@ export function Header({
   title, 
   showMenuButton = false, 
   onMenuClick,
+  showBackButton = false,
+  onBackClick,
   actions = []
 }: HeaderProps) {
   const { currentTab } = useTabStore()
@@ -48,6 +52,15 @@ export function Header({
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left side */}
         <div className="flex items-center space-x-3">
+          {showBackButton && (
+            <button
+              onClick={onBackClick}
+              className="p-2 rounded-full hover:bg-surface-variant transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6 text-text-primary" />
+            </button>
+          )}
+          
           {showMenuButton && (
             <button
               onClick={onMenuClick}

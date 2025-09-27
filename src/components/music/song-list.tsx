@@ -1,6 +1,7 @@
 'use client'
 
 import { Play, MoreHorizontal } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { formatDuration } from '@/lib/utils'
 
 interface SongListProps {
@@ -10,11 +11,20 @@ interface SongListProps {
     artist: string
     duration: number
     image: string
+    artistsId?: string
   }>
   onPlay: (song: any) => void
 }
 
 export function SongList({ songs, onPlay }: SongListProps) {
+  const router = useRouter()
+
+  const handleArtistClick = (artistsId: string) => {
+    if (artistsId) {
+      router.push(`/artist/${artistsId}`)
+    }
+  }
+
   return (
     <div className="space-y-2">
       {songs.map((song, index) => (
@@ -45,7 +55,12 @@ export function SongList({ songs, onPlay }: SongListProps) {
           {/* Song Info */}
           <div className="flex-1 min-w-0">
             <h4 className="font-medium text-text-primary truncate">{song.title}</h4>
-            <p className="text-sm text-text-secondary truncate">{song.artist}</p>
+            <button
+              onClick={() => handleArtistClick(song.artistsId || '')}
+              className="text-sm text-text-secondary truncate hover:text-primary transition-colors text-left"
+            >
+              {song.artist}
+            </button>
           </div>
 
           {/* Duration */}

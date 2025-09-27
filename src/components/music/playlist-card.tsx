@@ -1,5 +1,7 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
 interface PlaylistCardProps {
   playlist: {
     id: string
@@ -11,8 +13,14 @@ interface PlaylistCardProps {
 }
 
 export function PlaylistCard({ playlist }: PlaylistCardProps) {
+  const router = useRouter()
+
+  const handlePlaylistClick = () => {
+    router.push(`/playlist/${playlist.id}`)
+  }
+
   return (
-    <div className="group cursor-pointer">
+    <div className="group cursor-pointer" onClick={handlePlaylistClick}>
       <div className="relative">
         <div className="w-full h-40 bg-surface-variant rounded-lg overflow-hidden mb-2">
           {playlist.image ? (

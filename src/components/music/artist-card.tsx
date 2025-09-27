@@ -1,6 +1,6 @@
 'use client'
 
-import { useTabStore } from '@/store/tab-store'
+import { useRouter } from 'next/navigation'
 
 interface ArtistCardProps {
   artist: {
@@ -12,11 +12,10 @@ interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
-  const { setCurrentTab } = useTabStore()
+  const router = useRouter()
 
   const handleArtistClick = () => {
-    // Navigate to artist details - for now just go to search
-    setCurrentTab(1)
+    router.push(`/artist/${artist.id}`)
   }
 
   return (

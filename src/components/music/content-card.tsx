@@ -1,6 +1,7 @@
 'use client'
 
 import { Play } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { usePlayerStore } from '@/store/player-store'
 
 interface ContentCardProps {
@@ -17,6 +18,7 @@ interface ContentCardProps {
 
 export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
   const { currentSong } = usePlayerStore()
+  const router = useRouter()
   
   // Safety check for undefined item
   if (!item) {
@@ -30,7 +32,22 @@ export function ContentCard({ item, onPlay, onClick }: ContentCardProps) {
   }
   
   const isPlaying = currentSong?.id === item.id
-  const handleClick = onClick || onPlay
+  
+  const handleClick = () => {
+    console.log('ContentCard clicked:', { type: item.type, id: item.id })
+    
+    if (onClick) {
+      onClick()
+    } else if (item.type === 'playlist') {
+      console.log('Navigating to playlist:', `/playlist/${item.id}`)
+      router.push(`/playlist/${item.id}`)
+    } else if (item.type === 'artist') {
+      console.log('Navigating to artist:', `/artist/${item.id}`)
+      router.push(`/artist/${item.id}`)
+    } else if (onPlay) {
+      onPlay()
+    }
+  }
 
   return (
     <div className="group cursor-pointer" onClick={handleClick}>

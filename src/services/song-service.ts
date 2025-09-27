@@ -7,7 +7,7 @@ export class SongService {
   private readonly artistsCollection = 'artists'
   private readonly categoriesCollection = 'categories'
 
-  async fetchSongs(limitCount: number = 50): Promise<Song[]> {
+  async fetchSongs(limitCount?: number): Promise<Song[]> {
     try {
       console.log('🎵 Fetching songs from Firebase...')
       const bhajans = await this.fetchBhajans(limitCount)
@@ -115,15 +115,14 @@ export class SongService {
     }
   }
 
-  async fetchBhajans(limitCount: number = 50): Promise<Bhajan[]> {
+  async fetchBhajans(limitCount?: number): Promise<Bhajan[]> {
     try {
-      console.log(`🎵 Fetching ${limitCount} bhajans from Firebase...`)
+      console.log(`🎵 Fetching ${limitCount ? limitCount : 'all'} bhajans from Firebase...`)
       
       // Simple query without orderBy to avoid index issues - matches mobile app approach
-      const q = query(
-        collection(db, this.bhajansCollection),
-        limit(limitCount)
-      )
+      const q = limitCount 
+        ? query(collection(db, this.bhajansCollection), limit(limitCount))
+        : query(collection(db, this.bhajansCollection))
       
       const snapshot = await getDocs(q)
       const bhajans = snapshot.docs.map(doc => {
@@ -175,13 +174,44 @@ export class SongService {
   }
 
   private bhajanToSong(bhajan: Bhajan): Song {
+    // Helper function to safely convert date to ISO string
+    const safeDateToISO = (date: any): string => {
+      try {
+        if (!date) return new Date().toISOString()
+        
+        let dateObj: Date
+        
+        if (date instanceof Date) {
+          dateObj = date
+        } else if (date.toDate && typeof date.toDate === 'function') {
+          // Firestore Timestamp
+          dateObj = date.toDate()
+        } else if (typeof date === 'string' || typeof date === 'number') {
+          dateObj = new Date(date)
+        } else {
+          dateObj = new Date()
+        }
+        
+        // Check if the date is valid
+        if (isNaN(dateObj.getTime())) {
+          console.warn('Invalid date detected, using current date:', date)
+          return new Date().toISOString()
+        }
+        
+        return dateObj.toISOString()
+      } catch (error) {
+        console.warn('Error converting date to ISO string:', error, 'Using current date')
+        return new Date().toISOString()
+      }
+    }
+
     return {
       id: bhajan.id,
       name: bhajan.title,
       type: 'bhajan',
       album: bhajan.category || 'Bhajan Collection',
       year: '2025',
-      releaseDate: bhajan.uploadDate?.toISOString(),
+      releaseDate: safeDateToISO(bhajan.uploadDate),
       duration: '0', // Will be updated when audio metadata is available
       label: 'Bhajan Sangrah',
       artists: bhajan.artist,
@@ -239,7 +269,7 @@ export class SongService {
     }
   }
 
-  async fetchSongsByCategories(categoryIds: string[], limitCount: number = 20): Promise<Song[]> {
+  async fetchSongsByCategories(categoryIds: string[], limitCount?: number): Promise<Song[]> {
     try {
       console.log(`🎵 Fetching songs for categories: ${categoryIds.join(', ')}`)
       
@@ -270,12 +300,18 @@ export class SongService {
       const songIds = new Set<string>()
       
       for (const categoryName of categoryNames) {
-        const q = query(
-          collection(db, this.bhajansCollection),
-          where('category', '==', categoryName),
-          where('isActive', '==', true),
-          limit(limitCount)
-        )
+        const q = limitCount 
+          ? query(
+              collection(db, this.bhajansCollection),
+              where('category', '==', categoryName),
+              where('isActive', '==', true),
+              limit(limitCount)
+            )
+          : query(
+              collection(db, this.bhajansCollection),
+              where('category', '==', categoryName),
+              where('isActive', '==', true)
+            )
         
         const snapshot = await getDocs(q)
         const bhajans = snapshot.docs.map(doc => ({
@@ -292,14 +328,14 @@ export class SongService {
       }
       
       console.log(`🎵 Found ${allSongs.length} songs for categories`)
-      return allSongs.slice(0, limitCount)
+      return limitCount ? allSongs.slice(0, limitCount) : allSongs
     } catch (error) {
       console.error('❌ Error fetching songs by categories:', error)
       return []
     }
   }
 
-  async fetchSongsByArtists(artistIds: string[], limitCount: number = 20): Promise<Song[]> {
+  async fetchSongsByArtists(artistIds: string[], limitCount?: number): Promise<Song[]> {
     try {
       console.log(`🎵 Fetching songs for artists: ${artistIds.join(', ')}`)
       
@@ -330,12 +366,18 @@ export class SongService {
       const songIds = new Set<string>()
       
       for (const artistName of artistNames) {
-        const q = query(
-          collection(db, this.bhajansCollection),
-          where('artist', '==', artistName),
-          where('isActive', '==', true),
-          limit(limitCount)
-        )
+        const q = limitCount 
+          ? query(
+              collection(db, this.bhajansCollection),
+              where('artist', '==', artistName),
+              where('isActive', '==', true),
+              limit(limitCount)
+            )
+          : query(
+              collection(db, this.bhajansCollection),
+              where('artist', '==', artistName),
+              where('isActive', '==', true)
+            )
         
         const snapshot = await getDocs(q)
         const bhajans = snapshot.docs.map(doc => ({
@@ -352,9 +394,203 @@ export class SongService {
       }
       
       console.log(`🎵 Found ${allSongs.length} songs for artists`)
-      return allSongs.slice(0, limitCount)
+      return limitCount ? allSongs.slice(0, limitCount) : allSongs
     } catch (error) {
       console.error('❌ Error fetching songs by artists:', error)
+      return []
+    }
+  }
+
+  async fetchSongsByIds(songIds: string[]): Promise<Song[]> {
+    try {
+      console.log(`🎵 Fetching songs by IDs: ${songIds.length} songs`)
+      console.log(`🎵 Song IDs:`, songIds)
+      
+      if (songIds.length === 0) {
+        return []
+      }
+
+      // Fetch songs in batches to avoid query limits
+      const batchSize = 10 // Firestore 'in' queries are limited to 10 items
+      const allSongs: Song[] = []
+      
+      for (let i = 0; i < songIds.length; i += batchSize) {
+        const batch = songIds.slice(i, i + batchSize)
+        console.log(`🎵 Fetching batch ${Math.floor(i/batchSize) + 1}:`, batch)
+        
+        try {
+          const q = query(
+            collection(db, this.bhajansCollection),
+            where('__name__', 'in', batch)
+          )
+          
+          const snapshot = await getDocs(q)
+          console.log(`🎵 Batch query returned ${snapshot.docs.length} documents`)
+          
+          const bhajans = snapshot.docs.map(doc => {
+            const data = doc.data()
+            console.log(`🎵 Document ${doc.id} data:`, { 
+              id: doc.id, 
+              hasIsActive: 'isActive' in data,
+              isActive: data.isActive,
+              hasTitle: 'title' in data,
+              title: data.title,
+              uploadDateType: typeof data.uploadDate,
+              uploadDateValue: data.uploadDate
+            })
+            
+            // Helper function to safely read strings
+            const readString = (value: any): string => {
+              if (value == null) return ''
+              if (typeof value === 'string') return value
+              return value.toString()
+            }
+            
+            // Helper function to parse timestamps
+            const parseTimestamp = (timestamp: any): Date | null => {
+              if (timestamp == null) return null
+              if (timestamp instanceof Date) return timestamp
+              if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+                return timestamp.toDate()
+              }
+              return null
+            }
+            
+            return {
+              id: doc.id,
+              filename: readString(data.filename),
+              title: readString(data.title),
+              artist: readString(data.artist),
+              category: data.category?.toString(),
+              s3Url: readString(data.s3Url),
+              thumbnail: data.thumbnail?.toString(),
+              fileSize: data.fileSize ?? 0,
+              searchKeywords: Array.isArray(data.searchKeywords) ? data.searchKeywords : [],
+              isActive: data.isActive ?? true,
+              playCount: data.playCount ?? 0,
+              uploadDate: parseTimestamp(data.uploadDate),
+              uploadedBy: data.uploadedBy?.toString(),
+              uploadedByRole: data.uploadedByRole?.toString(),
+              createdAt: parseTimestamp(data.createdAt) || new Date(),
+              updatedAt: parseTimestamp(data.updatedAt) || new Date(),
+            } as Bhajan
+          })
+          
+          // Filter out inactive songs after fetching
+          const activeBhajans = bhajans.filter(bhajan => bhajan.isActive !== false)
+          console.log(`🎵 Active bhajans in batch: ${activeBhajans.length}`)
+          
+          allSongs.push(...activeBhajans.map(bhajan => this.bhajanToSong(bhajan)))
+        } catch (batchError) {
+          console.error(`❌ Error fetching batch ${Math.floor(i/batchSize) + 1}:`, batchError)
+          // Continue with next batch
+        }
+      }
+      
+      // Sort by the original order of songIds
+      const sortedSongs = songIds
+        .map(id => allSongs.find(song => song.id === id))
+        .filter(song => song !== undefined) as Song[]
+      
+      console.log(`🎵 Found ${sortedSongs.length} songs by IDs out of ${songIds.length} requested`)
+      return sortedSongs
+    } catch (error) {
+      console.error('❌ Error fetching songs by IDs:', error)
+      return []
+    }
+  }
+
+  async fetchSongsByPlaylistName(playlistName: string): Promise<Song[]> {
+    try {
+      console.log(`🎵 Fetching songs for playlist: ${playlistName}`)
+      
+      // Try different approaches to find songs for this playlist
+      const queries = [
+        // Try to find songs with playlist name in title or description
+        query(
+          collection(db, this.bhajansCollection),
+          where('title', '>=', playlistName),
+          where('title', '<=', playlistName + '\uf8ff')
+        ),
+        // Try to find songs with playlist name in any field
+        query(
+          collection(db, this.bhajansCollection),
+          where('playlist', '==', playlistName)
+        ),
+        // Try to find songs with playlist name in tags
+        query(
+          collection(db, this.bhajansCollection),
+          where('tags', 'array-contains', playlistName)
+        )
+      ]
+      
+      let allSongs: Song[] = []
+      
+      for (const q of queries) {
+        try {
+          const snapshot = await getDocs(q)
+          const bhajans = snapshot.docs.map(doc => {
+            const data = doc.data()
+            
+            // Helper function to safely read strings
+            const readString = (value: any): string => {
+              if (value == null) return ''
+              if (typeof value === 'string') return value
+              return value.toString()
+            }
+            
+            // Helper function to parse timestamps
+            const parseTimestamp = (timestamp: any): Date | null => {
+              if (timestamp == null) return null
+              if (timestamp instanceof Date) return timestamp
+              if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+                return timestamp.toDate()
+              }
+              return null
+            }
+            
+            return {
+              id: doc.id,
+              filename: readString(data.filename),
+              title: readString(data.title),
+              artist: readString(data.artist),
+              category: data.category?.toString(),
+              s3Url: readString(data.s3Url),
+              thumbnail: data.thumbnail?.toString(),
+              fileSize: data.fileSize ?? 0,
+              searchKeywords: Array.isArray(data.searchKeywords) ? data.searchKeywords : [],
+              isActive: data.isActive ?? true,
+              playCount: data.playCount ?? 0,
+              uploadDate: parseTimestamp(data.uploadDate),
+              uploadedBy: data.uploadedBy?.toString(),
+              uploadedByRole: data.uploadedByRole?.toString(),
+              createdAt: parseTimestamp(data.createdAt) || new Date(),
+              updatedAt: parseTimestamp(data.updatedAt) || new Date(),
+            } as Bhajan
+          })
+          
+          const activeBhajans = bhajans.filter(bhajan => bhajan.isActive !== false)
+          allSongs.push(...activeBhajans.map(bhajan => this.bhajanToSong(bhajan)))
+          
+          if (allSongs.length > 0) {
+            console.log(`🎵 Found ${allSongs.length} songs for playlist: ${playlistName}`)
+            break // Found songs, no need to try other queries
+          }
+        } catch (queryError) {
+          console.log(`🎵 Query failed for playlist ${playlistName}:`, queryError)
+          // Continue with next query
+        }
+      }
+      
+      // If no songs found, return some random songs as fallback
+      if (allSongs.length === 0) {
+        console.log(`🎵 No songs found for playlist ${playlistName}, returning random songs`)
+        allSongs = await this.fetchRandomSongs(10)
+      }
+      
+      return allSongs
+    } catch (error) {
+      console.error('❌ Error fetching songs by playlist name:', error)
       return []
     }
   }

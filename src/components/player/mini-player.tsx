@@ -89,7 +89,7 @@ export function MiniPlayer() {
   return (
     <>
       {/* Main Player Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 player-backdrop border-t border-gray-200 music-player-shadow" style={{ height: '80px' }}>
+      <div className="w-full bg-white/95 player-backdrop border-t border-gray-200 music-player-shadow" style={{ height: '80px' }}>
         {/* Progress Bar - Always visible */}
         <div className="w-full h-1 bg-gray-200 cursor-pointer progress-bar-hover" onClick={handleProgressClick} ref={progressRef}>
           <div
