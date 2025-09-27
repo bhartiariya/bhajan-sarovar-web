@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { Settings, User, Bell, Shield, Palette, Volume2 } from 'lucide-react'
+import { UI_CONFIG } from '@/lib/constants'
 
 export function SettingsPage() {
   const [notifications, setNotifications] = useState(true)
   const [autoPlay, setAutoPlay] = useState(false)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [volume, setVolume] = useState(80)
+  const [theme, setTheme] = useState<'light' | 'dark'>(UI_CONFIG.DEFAULT_THEME)
+  const [volume, setVolume] = useState(UI_CONFIG.DEFAULT_VOLUME)
 
   const settingsSections = [
     {

@@ -10,6 +10,7 @@ import { artistService } from '@/services/artist-service'
 import { playlistService } from '@/services/playlist-service'
 import { personalizationService } from '@/services/personalization-service'
 import { Song } from '@/types'
+import { UI_CONFIG } from '@/lib/constants'
 
 export function HomePage() {
   const { user, userData } = useAuthStore()
@@ -34,7 +35,7 @@ export function HomePage() {
   // 3. Artists Section - Always show with lazy loading
   const { data: featuredArtists, isLoading: isLoadingFeaturedArtists } = useQuery({
     queryKey: ['featuredArtists'],
-    queryFn: () => artistService.fetchFeaturedArtists(5),
+    queryFn: () => artistService.fetchFeaturedArtists(UI_CONFIG.FEATURED_ARTISTS_LIMIT),
   })
 
   // 4. Bhajan Sangrah Section - Always show with lazy loading

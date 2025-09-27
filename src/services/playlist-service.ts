@@ -1,7 +1,7 @@
 import { db } from '@/lib/firebase';
 import { Playlist } from '@/types';
 import { doc, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
-import { readString, parseTimestamp } from '@/utils/firestore-helpers';
+import { readString, parseTimestamp } from '@/lib/utils';
 
 class PlaylistService {
   private readonly curatedPlaylistNames = [

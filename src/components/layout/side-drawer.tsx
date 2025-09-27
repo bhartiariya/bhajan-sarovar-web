@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { X, Home, Search, Library, User, Settings, MessageCircle, LogOut, Music, BarChart3, Heart, Clock, Plus } from 'lucide-react'
+import { Home, Search, Library, User, Settings, MessageCircle, LogOut, Music, BarChart3, Heart, Clock, Plus } from 'lucide-react'
 import { useAuthStore } from '@/store/auth-store'
 import { useTabStore } from '@/store/tab-store'
+import { TAB_INDICES, TAB_TITLES } from '@/lib/constants'
 
 interface SideDrawerProps {
   isOpen: boolean
@@ -16,42 +16,26 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
 
   const handleNavigation = (tabId: number) => {
     setCurrentTab(tabId)
-    onClose()
   }
 
   const handleSignOut = async () => {
     await signOut()
-    onClose()
   }
 
   const navigationItems = [
-    { id: 0, label: 'Home', icon: Home },
-    { id: 1, label: 'Search', icon: Search },
-    { id: 2, label: 'Library', icon: Library },
+    { id: TAB_INDICES.HOME, label: TAB_TITLES[TAB_INDICES.HOME], icon: Home },
+    { id: TAB_INDICES.SEARCH, label: TAB_TITLES[TAB_INDICES.SEARCH], icon: Search },
+    { id: TAB_INDICES.LIBRARY, label: TAB_TITLES[TAB_INDICES.LIBRARY], icon: Library },
   ]
 
   const userItems = [
-    { id: 3, label: 'Profile', icon: User },
-    { id: 4, label: 'Settings', icon: Settings },
-    { id: 5, label: 'Contact Us', icon: MessageCircle },
+    { id: TAB_INDICES.PROFILE, label: TAB_TITLES[TAB_INDICES.PROFILE], icon: User },
+    { id: TAB_INDICES.SETTINGS, label: TAB_TITLES[TAB_INDICES.SETTINGS], icon: Settings },
+    { id: TAB_INDICES.CONTACT, label: TAB_TITLES[TAB_INDICES.CONTACT], icon: MessageCircle },
   ]
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-
-  if (!isOpen && isMobile) return null
-
   return (
-    <>
-      {/* Mobile Backdrop */}
-      {isMobile && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-20"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={`${isMobile ? 'fixed left-0 top-0 bottom-0 w-80 z-20' : 'w-full h-full'} bg-white/95 backdrop-blur-xl shadow-lg`}>
+    <div className="w-full h-full bg-white/95 backdrop-blur-xl shadow-lg">
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo - Fixed Header */}
           <div className="p-6 flex-shrink-0">
@@ -64,14 +48,6 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
                 <p className="text-xs text-gray-600">Spiritual Music</p>
               </div>
             </div>
-            {isMobile && (
-              <button
-                onClick={onClose}
-                className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-            )}
           </div>
 
           {/* Scrollable Content */}
@@ -171,21 +147,21 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
             <div className="px-3 mb-6">
               {(user?.role === 'member' || user?.role === 'artist' || user?.role === 'admin') && (
                 <button
-                  onClick={() => handleNavigation(7)}
+                  onClick={() => handleNavigation(TAB_INDICES.APPLY_ARTIST)}
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   <Music className="w-5 h-5" />
-                  <span className="font-medium">Apply to be Artist</span>
+                  <span className="font-medium">{TAB_TITLES[TAB_INDICES.APPLY_ARTIST]}</span>
                 </button>
               )}
 
               {user?.role === 'artist' && (
                 <button
-                  onClick={() => handleNavigation(8)}
+                  onClick={() => handleNavigation(TAB_INDICES.ARTIST_DASHBOARD)}
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   <BarChart3 className="w-5 h-5" />
-                  <span className="font-medium">Artist Dashboard</span>
+                  <span className="font-medium">{TAB_TITLES[TAB_INDICES.ARTIST_DASHBOARD]}</span>
                 </button>
               )}
             </div>
@@ -206,6 +182,5 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
           )}
         </div>
       </div>
-    </>
   )
 }

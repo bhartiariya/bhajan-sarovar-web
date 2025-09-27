@@ -5,7 +5,7 @@ import { playlistService } from './playlist-service';
 import { songService } from './song-service';
 import { artistService } from './artist-service';
 import { UserProfile, Song, Artist, Playlist } from '@/types';
-import { readString, safeStringList } from '@/utils/firestore-helpers';
+import { readString, safeStringList } from '@/lib/utils';
 
 class PersonalizationService {
   private userService: UserService;

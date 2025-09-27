@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth-store'
+import { APP_CONFIG } from '@/lib/constants'
 
 export function SplashScreen() {
   const [isLoading, setIsLoading] = useState(true)
@@ -12,7 +13,7 @@ export function SplashScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 2000)
+    }, APP_CONFIG.SPLASH_DURATION)
 
     return () => clearTimeout(timer)
   }, [])

@@ -1,7 +1,7 @@
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { UserProfile } from '@/types';
-import { readString, safeStringList, parseTimestamp } from '@/utils/firestore-helpers';
+import { readString, safeStringList, parseTimestamp } from '@/lib/utils';
 
 class UserService {
   async getUserProfile(userId: string): Promise<UserProfile | null> {

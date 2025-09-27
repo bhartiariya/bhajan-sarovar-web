@@ -1,12 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { useAuthStore } from '@/store/auth-store'
 import { usePlayerStore } from '@/store/player-store'
 import { useTabStore } from '@/store/tab-store'
 import { SideDrawer } from '@/components/layout/side-drawer'
-import { Header } from '@/components/layout/header'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { MiniPlayer } from '@/components/player/mini-player'
 import { FullPlayer } from '@/components/player/full-player'
 import { HomePage } from '@/components/pages/home-page'
@@ -20,34 +17,34 @@ import { ApplyArtistPage } from '@/components/pages/apply-artist-page'
 import { ArtistDashboard } from '@/components/pages/artist-dashboard'
 import { ArtistDetailsPage } from '@/components/pages/artist-details-page'
 import { Toaster } from 'react-hot-toast'
+import { TAB_INDICES, TAB_TITLES, UI_CONFIG } from '@/lib/constants'
 
 export function MainLayout() {
   const { user } = useAuthStore()
   const { currentTab, selectedArtistId } = useTabStore()
   const { currentSong, isFullPlayerVisible } = usePlayerStore()
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const renderCurrentPage = () => {
     switch (currentTab) {
-      case 0:
+      case TAB_INDICES.HOME:
         return <HomePage />
-      case 1:
+      case TAB_INDICES.SEARCH:
         return <SearchPage />
-      case 2:
+      case TAB_INDICES.LIBRARY:
         return <LibraryPage />
-      case 3:
+      case TAB_INDICES.PROFILE:
         return <ProfilePage />
-      case 4:
+      case TAB_INDICES.SETTINGS:
         return <SettingsPage />
-      case 5:
+      case TAB_INDICES.CONTACT:
         return <ContactPage />
-      case 6:
+      case TAB_INDICES.ADMIN:
         return <AdminDashboard />
-      case 7:
+      case TAB_INDICES.APPLY_ARTIST:
         return <ApplyArtistPage />
-      case 8:
+      case TAB_INDICES.ARTIST_DASHBOARD:
         return <ArtistDashboard />
-      case 9:
+      case TAB_INDICES.ARTIST_DETAILS:
         return selectedArtistId ? <ArtistDetailsPage artistId={selectedArtistId} /> : <HomePage />
       default:
         return <HomePage />
@@ -55,68 +52,25 @@ export function MainLayout() {
   }
 
   const getHeaderTitle = (tabIndex: number) => {
-    switch (tabIndex) {
-      case 0:
-        return 'Home'
-      case 1:
-        return 'Search'
-      case 2:
-        return 'Library'
-      case 3:
-        return 'Profile'
-      case 4:
-        return 'Settings'
-      case 5:
-        return 'Contact Us'
-      case 6:
-        return 'Admin Dashboard'
-      case 7:
-        return 'Apply to be Artist'
-      case 8:
-        return 'Artist Dashboard'
-      case 9:
-        return 'Artist Details'
-      default:
-        return 'Home'
-    }
+    return TAB_TITLES[tabIndex as keyof typeof TAB_TITLES] || 'Home'
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Desktop Sidebar - Fixed */}
-      <div className="hidden md:flex fixed left-0 top-0 w-64 h-screen bg-white/95 backdrop-blur-xl border-r border-gray-200 z-30 shadow-lg">
+      {/* Desktop Sidebar - Always visible */}
+      <div className="fixed left-0 top-0 w-64 h-screen bg-white/95 backdrop-blur-xl border-r border-gray-200 z-30 shadow-lg">
         <SideDrawer isOpen={true} onClose={() => {}} />
       </div>
 
-      {/* Mobile Header - Fixed */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30">
-        <Header
-          title={getHeaderTitle(currentTab)}
-          showMenuButton={true}
-          onMenuClick={() => setIsDrawerOpen(true)}
-        />
-      </div>
-
-      {/* Mobile Side Drawer - Fixed */}
-      <div className="md:hidden">
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-        />
-      </div>
-
-      {/* Main Content - With proper spacing for fixed elements */}
+      {/* Main Content */}
       <main 
-        className={`${user ? 'md:ml-64' : 'md:ml-0'} transition-all duration-300`} 
+        className={`${user ? 'ml-64' : 'ml-0'} transition-all duration-300`} 
         style={{ 
-          paddingTop: '0px', // No top padding for desktop
           paddingBottom: '80px', // Space for mini player
-          minHeight: '100vh'
+          minHeight: '100vh',
+          marginLeft: user ? `${UI_CONFIG.SIDEBAR_WIDTH}px` : '0px'
         }}
       >
-        {/* Mobile top spacing */}
-        <div className="md:hidden h-16"></div>
-        
         <div className="min-h-screen">
           {renderCurrentPage()}
         </div>
@@ -134,10 +88,6 @@ export function MainLayout() {
         </div>
       )}
 
-      {/* Bottom Navigation - Mobile Only, Fixed */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30">
-        <BottomNavigation />
-      </div>
 
       {/* Toast Notifications */}
       <Toaster
