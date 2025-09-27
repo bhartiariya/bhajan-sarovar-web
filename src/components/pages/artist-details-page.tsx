@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useTabStore } from '@/store/tab-store'
 import { 
   Play, 
   Pause, 
@@ -40,6 +41,7 @@ interface ArtistDetailsPageProps {
 export function ArtistDetailsPage({ artistId: propArtistId }: ArtistDetailsPageProps) {
   const params = useParams()
   const router = useRouter()
+  const { setCurrentTab } = useTabStore()
   const artistId = propArtistId || params?.id as string
   
   const [artist, setArtist] = useState<Artist | null>(null)
@@ -188,8 +190,25 @@ export function ArtistDetailsPage({ artistId: propArtistId }: ArtistDetailsPageP
     )
   }
 
+  const handleBackClick = () => {
+    setCurrentTab(0) // Go back to home page
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900/20 to-background-primary">
+      {/* Back Button */}
+      <div className="p-4">
+        <button
+          onClick={handleBackClick}
+          className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
+
       {/* Header Section */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />

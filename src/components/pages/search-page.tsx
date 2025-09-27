@@ -149,9 +149,6 @@ export function SearchPage() {
                     <ArtistCard
                       key={artist.id}
                       artist={artist}
-                      onClick={() => {
-                        console.log('Viewing artist:', artist.name)
-                      }}
                     />
                   ))
                 )}
@@ -206,9 +203,6 @@ export function SearchPage() {
                   <ArtistCard
                     key={artist.id}
                     artist={artist}
-                    onClick={() => {
-                      console.log('Viewing artist:', artist.name)
-                    }}
                   />
                 ))
               )}

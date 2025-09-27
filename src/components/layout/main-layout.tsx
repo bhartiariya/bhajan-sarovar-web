@@ -18,11 +18,12 @@ import { ContactPage } from '@/components/pages/contact-page'
 import { AdminDashboard } from '@/components/pages/admin-dashboard'
 import { ApplyArtistPage } from '@/components/pages/apply-artist-page'
 import { ArtistDashboard } from '@/components/pages/artist-dashboard'
+import { ArtistDetailsPage } from '@/components/pages/artist-details-page'
 import { Toaster } from 'react-hot-toast'
 
 export function MainLayout() {
   const { user } = useAuthStore()
-  const { currentTab } = useTabStore()
+  const { currentTab, selectedArtistId } = useTabStore()
   const { currentSong, isFullPlayerVisible } = usePlayerStore()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
@@ -46,6 +47,8 @@ export function MainLayout() {
         return <ApplyArtistPage />
       case 8:
         return <ArtistDashboard />
+      case 9:
+        return selectedArtistId ? <ArtistDetailsPage artistId={selectedArtistId} /> : <HomePage />
       default:
         return <HomePage />
     }
@@ -71,6 +74,8 @@ export function MainLayout() {
         return 'Apply to be Artist'
       case 8:
         return 'Artist Dashboard'
+      case 9:
+        return 'Artist Details'
       default:
         return 'Home'
     }

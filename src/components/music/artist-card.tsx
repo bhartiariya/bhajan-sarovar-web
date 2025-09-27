@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useTabStore } from '@/store/tab-store'
 
 interface ArtistCardProps {
   artist: {
@@ -12,10 +12,11 @@ interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
-  const router = useRouter()
+  const { setSelectedArtist } = useTabStore()
 
   const handleArtistClick = () => {
-    router.push(`/artist/${artist.id}`)
+    console.log('Artist card clicked:', artist.name, 'ID:', artist.id)
+    setSelectedArtist(artist.id)
   }
 
   return (
